@@ -337,6 +337,76 @@ private fun openMarketResearchDialog(reportType: String, marketResearchTypeId: I
                     }
                 }
             }
+            filterBinding.edtSelectdate.setOnClickListener {
+            CommonUtils.getCalenderDate(activity!!, this)
+        }
+        
+                selectDate = filterBinding.edtSelectdate
+
+        
+           fun getCalenderDate(context: Context, listener: DateChooseListener) {
+
+            val calender = Calendar.getInstance(TimeZone.getDefault())
+
+            val dialog = DatePickerDialog(context, DatePickerDialog.OnDateSetListener { view, year, month, dayOfMonth ->
+                val monthOfYear: Int = month + 1
+
+                var updatedDate: String = ""
+                var updatedMonth: String = ""
+
+                if (monthOfYear in 0..9)
+                    updatedMonth = "0$monthOfYear"
+                else
+                    updatedMonth = monthOfYear.toString()
+
+                if (dayOfMonth in 0..9)
+                    updatedDate = "0$dayOfMonth"
+                else
+                    updatedDate = dayOfMonth.toString()
+
+                val selectedDate = "$updatedMonth/$updatedDate/$year"
+                listener.onDatePick(selectedDate)
+
+            }, calender.get(Calendar.YEAR), calender.get(Calendar.MONTH), calender.get(Calendar.DAY_OF_MONTH))
+            //condition to disable past date
+            //dialog.datePicker.minDate = System.currentTimeMillis() - 1000
+            dialog.show()
+        }
+        
+        override fun onDatePick(date: String) {
+        val datePicked = DateParser.parseDateAppFormatFrom(date)
+        selectDate!!.setText(datePicked)
+    }
+    
+     const val COMMON_DATE_FORMAT = "dd MMM yyyy"
+    const val SYSTEM_DATE_FORMAT = "MM/dd/yyyy"
+        const val DATE_FORMAT_YEAR = "yyyy-MM-dd"
+
+    
+            fun parseDateAppFormatFrom(dateString : String, iDateFormat:String = Constant.SYSTEM_DATE_FORMAT):String{
+
+            return try {
+                val iSdf = SimpleDateFormat(iDateFormat)
+                val odf = SimpleDateFormat(Constant.COMMON_DATE_FORMAT)
+                val formattedDate = iSdf.parse(dateString)
+                val dateInString = odf.format(formattedDate)
+                dateInString
+            }catch (e:Exception){
+                dateString
+            }
+        }
+
+        
+         val inputDateStr = filterBinding.edtSelectdate.text.toString()
+            val inputFormat = SimpleDateFormat("dd MMM yyyy")
+            val outputFormat = SimpleDateFormat("dd/MM/yyyy")
+            
+            if (filterBinding.edtSelectdate.text.toString().isNotEmpty()) {
+
+                val dates = inputFormat.parse(inputDateStr)
+                convertedDate = outputFormat.format(dates)
+            }
+
 
 
         filterBinding.btnApplyfilter.setOnClickListener {
